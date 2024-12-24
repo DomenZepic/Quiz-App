@@ -1,8 +1,218 @@
+/* -- DOLOČANJE ŠTEVILA VPRAŠANJ -- */
+const slider = document.getElementById("#-of-questions");
+const output = document.getElementById("demo");
 
-// dinamični prikaz vrednosti sliderja
-var slider = document.getElementById("#-of-questions");
-    var output = document.getElementById("demo");
-    output.innerHTML = slider.value;
-    slider.oninput = function() {
-        output.innerHTML = this.value;
+var numberOfQuestions = slider.value;
+
+output.innerHTML = slider.value; // Dinamično spreminja cifro pri slidejru
+slider.oninput = function() {
+    numberOfQuestions = this.value;
+    output.innerHTML = numberOfQuestions;
+};
+
+
+
+// Start game button
+document.getElementById("start-game").onclick = function() {
+    console.log(`Number of Questions: ${numberOfQuestions}`);
+    startGame();
+};
+
+
+
+
+var currentQuestionLevel = 0;
+var correctAnswers = 0;
+
+// Containers
+const startContainer = document.querySelector(".start-screen");
+const questionsContainer = document.querySelector(".question-container");
+
+function startGame() {
+    startContainer.hidden = true; // Hide start screen
+    questionsContainer.hidden = false; // Show questions screen
+
+    const currentQuestionNumber = document.getElementById("question-level");
+    const currentQuestionText = document.getElementById("question-text");
+    const optionFields = {
+        A: document.getElementById("labelA"),
+        B: document.getElementById("labelB"),
+        C: document.getElementById("labelC"),
+        D: document.getElementById("labelD"),
+    };
+
+    while (currentQuestionLevel < numberOfQuestions) {
+        const questionData = questions[currentQuestionLevel];
+
+        currentQuestionLevel++;
+
+        // Dynamically display questions and answers
+        currentQuestionNumber.textContent = `Question ${currentQuestionLevel} of ${numberOfQuestions}`;
+        currentQuestionText.textContent = questionData.question;
+        optionFields.A.textContent = questionData.options[0];
+        optionFields.B.textContent = questionData.options[1];
+        optionFields.C.textContent = questionData.options[2];
+        optionFields.D.textContent = questionData.options[3];
     }
+}
+
+
+
+
+
+
+
+
+// DATABASE - UPDEJTEJ KO SE NAUČIŠ SQL
+const questions = [
+    {
+        question: "What is the capital of Germany?",
+        options: ["Berlin", "Vienna", "Amsterdam", "Brussels"],
+        correct: "Berlin"
+    },
+    {
+        question: "Which planet is known as the Red Planet?",
+        options: ["Earth", "Mars", "Jupiter", "Venus"],
+        correct: "Mars"
+    },
+    {
+        question: "What is the chemical symbol for water?",
+        options: ["H2O", "O2", "CO2", "HO"],
+        correct: "H2O"
+    },
+    {
+        question: "Who painted the Mona Lisa?",
+        options: ["Leonardo da Vinci", "Pablo Picasso", "Vincent van Gogh", "Claude Monet"],
+        correct: "Leonardo da Vinci"
+    },
+    {
+        question: "What is the largest mammal in the world?",
+        options: ["Elephant", "Blue Whale", "Giraffe", "Hippopotamus"],
+        correct: "Blue Whale"
+    },
+    {
+        question: "How many continents are there?",
+        options: ["5", "6", "7", "8"],
+        correct: "7"
+    },
+    {
+        question: "What is the capital city of Japan?",
+        options: ["Seoul", "Beijing", "Tokyo", "Bangkok"],
+        correct: "Tokyo"
+    },
+    {
+        question: "Which year did World War II end?",
+        options: ["1942", "1945", "1948", "1950"],
+        correct: "1945"
+    },
+    {
+        question: "What is the square root of 81?",
+        options: ["7", "8", "9", "10"],
+        correct: "9"
+    },
+    {
+        question: "Who wrote 'Romeo and Juliet'?",
+        options: ["Charles Dickens", "William Shakespeare", "Mark Twain", "Jane Austen"],
+        correct: "William Shakespeare"
+    },
+    {
+        question: "What is the capital of Australia?",
+        options: ["Sydney", "Melbourne", "Canberra", "Brisbane"],
+        correct: "Canberra"
+    },
+    {
+        question: "What is the boiling point of water in Celsius?",
+        options: ["50°C", "100°C", "150°C", "200°C"],
+        correct: "100°C"
+    },
+    {
+        question: "Which gas do plants use during photosynthesis?",
+        options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
+        correct: "Carbon Dioxide"
+    },
+    {
+        question: "What is the smallest prime number?",
+        options: ["0", "1", "2", "3"],
+        correct: "2"
+    },
+    {
+        question: "What is the capital of Italy?",
+        options: ["Milan", "Venice", "Florence", "Rome"],
+        correct: "Rome"
+    },
+    {
+        question: "Who discovered penicillin?",
+        options: ["Marie Curie", "Alexander Fleming", "Louis Pasteur", "Isaac Newton"],
+        correct: "Alexander Fleming"
+    },
+    {
+        question: "What is the tallest mountain in the world?",
+        options: ["K2", "Kangchenjunga", "Mount Everest", "Makalu"],
+        correct: "Mount Everest"
+    },
+    {
+        question: "What is the primary language spoken in Brazil?",
+        options: ["Spanish", "Portuguese", "English", "French"],
+        correct: "Portuguese"
+    },
+    {
+        question: "How many degrees are there in a circle?",
+        options: ["90", "180", "270", "360"],
+        correct: "360"
+    },
+    {
+        question: "Who is known as the father of computers?",
+        options: ["Charles Babbage", "Alan Turing", "Tim Berners-Lee", "John von Neumann"],
+        correct: "Charles Babbage"
+    },
+    {
+        question: "What is the hardest natural substance on Earth?",
+        options: ["Gold", "Iron", "Diamond", "Quartz"],
+        correct: "Diamond"
+    },
+    {
+        question: "Which country is famous for the Great Wall?",
+        options: ["India", "China", "Japan", "Russia"],
+        correct: "China"
+    },
+    {
+        question: "What is the capital of Canada?",
+        options: ["Toronto", "Vancouver", "Montreal", "Ottawa"],
+        correct: "Ottawa"
+    },
+    {
+        question: "Which planet is closest to the Sun?",
+        options: ["Mercury", "Venus", "Earth", "Mars"],
+        correct: "Mercury"
+    },
+    {
+        question: "Who invented the telephone?",
+        options: ["Thomas Edison", "Alexander Graham Bell", "Nikola Tesla", "Samuel Morse"],
+        correct: "Alexander Graham Bell"
+    },
+    {
+        question: "What is the largest desert in the world?",
+        options: ["Sahara", "Gobi", "Antarctic Desert", "Kalahari"],
+        correct: "Antarctic Desert"
+    },
+    {
+        question: "How many colors are there in a rainbow?",
+        options: ["5", "6", "7", "8"],
+        correct: "7"
+    },
+    {
+        question: "What is the freezing point of water in Fahrenheit?",
+        options: ["0°F", "32°F", "50°F", "100°F"],
+        correct: "32°F"
+    },
+    {
+        question: "What is the chemical symbol for gold?",
+        options: ["Ag", "Au", "Pb", "Go"],
+        correct: "Au"
+    },
+    {
+        question: "Which organ in the human body filters blood?",
+        options: ["Heart", "Lungs", "Liver", "Kidneys"],
+        correct: "Kidneys"
+    }
+];

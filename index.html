@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="start-screen">
+    <div class="start-screen" id="start-screen">
         <h1 class="start-screen-title">Welcome to Quiz App</h1>
         <div class="questions-slider-container">
             <p>Choose a number of questions</p>
@@ -19,31 +19,31 @@
         <button class="start-game" id="start-game">Start game!</button>
     </div>
 
-    <div class="question-container">
+    <div class="question-container" id="question-container" hidden>
         <div class="top-row">
-            <h2>Question 1 of 20</h2>
+            <h2 id="question-level">Lorem Ipsum</h2>
             <span>00:00</span>
         </div>
         <div class="question">
-            <p>Lorem Ipsum Question</p>
+            <p id="question-text">Lorem Ipsum Question</p>
             <div class="possible-answers">
                 <input type="radio" id="optionA" name="question" value="A">
-                <label for="optionA">Option A</label>
+                <label for="optionA" id="labelA">Option A</label>
             
                 <input type="radio" id="optionB" name="question" value="B">
-                <label for="optionB">Option B</label>
+                <label for="optionB" id="labelB">Option B</label>
             
                 <input type="radio" id="optionC" name="question" value="C">
-                <label for="optionC">Option C</label>
+                <label for="optionC" id="labelC">Option C</label>
             
                 <input type="radio" id="optionD" name="question" value="D">
-                <label for="optionD">Option D</label>
+                <label for="optionD" id="labelD">Option D</label>
             </div>
             <button class="check-button" id="check-button">Check</button>    
         </div>
     </div>
 
-    <div class="result-container">
+    <div class="result-container" hidden>
         <img src="/images/trophy-1.png" alt="Gold trophy">
         <p>Congratulations!</p>
         <p>You got <strong>6</strong> out of <strong>20</strong> correct!</p>
