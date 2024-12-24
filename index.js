@@ -1,63 +1,78 @@
-/* -- DOLOČANJE ŠTEVILA VPRAŠANJ -- */
+
+// konstante
 const slider = document.getElementById("#-of-questions");
 const output = document.getElementById("demo");
-
-var numberOfQuestions = slider.value;
-
-output.innerHTML = slider.value; // Dinamično spreminja cifro pri slidejru
-slider.oninput = function() {
-    numberOfQuestions = this.value;
-    output.innerHTML = numberOfQuestions;
-};
-
-
-
-// Start game button
-document.getElementById("start-game").onclick = function() {
-    console.log(`Number of Questions: ${numberOfQuestions}`);
-    startGame();
-};
-
-
-
-
-var currentQuestionLevel = 0;
-var correctAnswers = 0;
-
-// Containers
 const startContainer = document.querySelector(".start-screen");
 const questionsContainer = document.querySelector(".question-container");
+const currentQuestionNumber = document.getElementById("question-level");
+const currentQuestionText = document.getElementById("question-text");
+const optionFields = {
+    A: document.getElementById("labelA"),
+    B: document.getElementById("labelB"),
+    C: document.getElementById("labelC"),
+    D: document.getElementById("labelD"),
+};
 
-function startGame() {
-    startContainer.hidden = true; // Hide start screen
-    questionsContainer.hidden = false; // Show questions screen
+// spremenljivke za igro
+let numberOfQuestions = slider.value;
+let currentQuestionLevel = 0;
+let correctAnswers = 0;
 
-    const currentQuestionNumber = document.getElementById("question-level");
-    const currentQuestionText = document.getElementById("question-text");
-    const optionFields = {
-        A: document.getElementById("labelA"),
-        B: document.getElementById("labelB"),
-        C: document.getElementById("labelC"),
-        D: document.getElementById("labelD"),
+
+// dolocanje stevila vprasanj s sliderjom
+function initializeSlider() {
+    output.textContent = slider.value; // nastavs stevilo vprasanj
+    slider.oninput = function () {
+        numberOfQuestions = this.value;
+        output.textContent = numberOfQuestions;
     };
+}
 
-    while (currentQuestionLevel < numberOfQuestions) {
-        const questionData = questions[currentQuestionLevel];
+// start game
+function startGame() {
+    resetGame(); // vsakic pred zacetkom resetiras gejm
+    startContainer.hidden = true; // skrijes prvotni screen
+    questionsContainer.hidden = false; // prikazes screen z vprasanji
+    displayQuestion(questions[currentQuestionLevel]);
+}
 
-        currentQuestionLevel++;
 
-        // Dynamically display questions and answers
-        currentQuestionNumber.textContent = `Question ${currentQuestionLevel} of ${numberOfQuestions}`;
-        currentQuestionText.textContent = questionData.question;
-        optionFields.A.textContent = questionData.options[0];
-        optionFields.B.textContent = questionData.options[1];
-        optionFields.C.textContent = questionData.options[2];
-        optionFields.D.textContent = questionData.options[3];
-    }
+// reset game
+function resetGame() {
+    currentQuestionLevel = 0;
+    correctAnswers = 0;
+    numberOfQuestions = slider.value;
+}
+
+
+// prikaz vprašanj
+function displayQuestion(questionData) {
+    currentQuestionNumber.textContent = `Question ${currentQuestionLevel + 1} of ${numberOfQuestions}`;
+    currentQuestionText.textContent = questionData.question;
+    optionFields.A.textContent = questionData.options[0];
+    optionFields.B.textContent = questionData.options[1];
+    optionFields.C.textContent = questionData.options[2];
+    optionFields.D.textContent = questionData.options[3];
 }
 
 
 
+// start button
+function setupStartButton() {
+    document.getElementById("start-game").onclick = function () {
+        console.log(`Number of Questions: ${numberOfQuestions}`);
+        startGame();
+    };
+}
+
+
+// prvi koraki v kvizu
+function initializeApp() {
+    initializeSlider();
+    setupStartButton();
+}
+
+initializeApp();        // začni kviz
 
 
 
