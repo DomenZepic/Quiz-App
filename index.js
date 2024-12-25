@@ -6,12 +6,22 @@ const startContainer = document.querySelector(".start-screen");
 const questionsContainer = document.querySelector(".question-container");
 const currentQuestionNumber = document.getElementById("question-level");
 const currentQuestionText = document.getElementById("question-text");
-const optionFields = {
+const optionFieldLabels = {
     A: document.getElementById("labelA"),
     B: document.getElementById("labelB"),
     C: document.getElementById("labelC"),
     D: document.getElementById("labelD"),
 };
+const optionField = {
+    A: document.getElementById("optionA"),
+    B: document.getElementById("optionB"),
+    C: document.getElementById("optionC"),
+    D: document.getElementById("optionD"),
+};
+const checkButton = document.getElementById("check-button");
+const endGameContainer = document.querySelector(".result-container");
+const restartButton = document.getElementById("restart-button");
+
 
 // spremenljivke za igro
 let numberOfQuestions = slider.value;
@@ -33,7 +43,10 @@ function startGame() {
     resetGame(); // vsakic pred zacetkom resetiras gejm
     startContainer.hidden = true; // skrijes prvotni screen
     questionsContainer.hidden = false; // prikazes screen z vprasanji
+    endGameContainer.hidden = true;
+    
     displayQuestion(questions[currentQuestionLevel]);
+    setupCheckButton();
 }
 
 
@@ -49,13 +62,46 @@ function resetGame() {
 function displayQuestion(questionData) {
     currentQuestionNumber.textContent = `Question ${currentQuestionLevel + 1} of ${numberOfQuestions}`;
     currentQuestionText.textContent = questionData.question;
-    optionFields.A.textContent = questionData.options[0];
-    optionFields.B.textContent = questionData.options[1];
-    optionFields.C.textContent = questionData.options[2];
-    optionFields.D.textContent = questionData.options[3];
+    optionFieldLabels.A.textContent = questionData.options[0];
+    optionFieldLabels.B.textContent = questionData.options[1];
+    optionFieldLabels.C.textContent = questionData.options[2];
+    optionFieldLabels.D.textContent = questionData.options[3];
 }
 
 
+
+// preverjanje pravilnosti odgovora
+function checkAnswer(correctAnswer) {
+
+    // ugotavljanje kateri odgovor je uporabnik prtisnu
+    const selectedOption = Object.keys(optionField).find(
+        (key) => optionField[key].checked
+    );
+
+    if (!selectedOption) {
+        return;
+    }
+
+    const selectedAnswer = optionFieldLabels[selectedOption].textContent;
+
+    if (selectedAnswer === correctAnswer) {
+        correctAnswers++;
+        console.log("Correct answer!");
+    } else {
+        console.log("Wrong answer!");
+    }
+
+
+    // če še ni konec igre, gremo na naslednje vprašanje
+    if (currentQuestionLevel < numberOfQuestions - 1) {
+        currentQuestionLevel++;
+        displayQuestion(questions[currentQuestionLevel]);
+    } else {
+        endGame();
+    }
+
+
+}
 
 // start button
 function setupStartButton() {
@@ -65,6 +111,28 @@ function setupStartButton() {
     };
 }
 
+// check button
+function setupCheckButton() {
+    checkButton.onclick = function() {
+        checkAnswer(questions[currentQuestionLevel].correct);
+    }
+}
+
+
+
+
+// end game
+function endGame() {
+    questionsContainer.hidden = true;
+    endGameContainer.hidden = false;
+
+    document.getElementById("result-text").textContent = 
+    `You got ${correctAnswers} answers out of ${numberOfQuestions} correct!`;
+
+    restartButton.onclick = function () {
+        startGame();
+    }
+}
 
 // prvi koraki v kvizu
 function initializeApp() {
