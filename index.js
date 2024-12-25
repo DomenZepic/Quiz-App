@@ -70,38 +70,72 @@ function displayQuestion(questionData) {
 
 
 
-// preverjanje pravilnosti odgovora
 function checkAnswer(correctAnswer) {
+    checkButton.disabled = true;                    // onemogočš gumb med preverjanjem, da ne pride do "dvojnega" preverjanja vprašanj - če tega ni, preskoč nasledn vprašanje
 
-    // ugotavljanje kateri odgovor je uporabnik prtisnu
+    // onemogočš druge optione
+    Object.keys(optionField).forEach((key) => {
+        optionField[key].disabled = true;
+    });
+
+
+    // preverš kater option je prtisnen
     const selectedOption = Object.keys(optionField).find(
         (key) => optionField[key].checked
     );
 
     if (!selectedOption) {
-        return;
+        checkButton.disabled = false;
+        return; 
     }
 
     const selectedAnswer = optionFieldLabels[selectedOption].textContent;
 
+    // preverš pravilnost odgovora
     if (selectedAnswer === correctAnswer) {
         correctAnswers++;
+        optionFieldLabels[selectedOption].classList.add("correct-answer");
         console.log("Correct answer!");
-    } else {
+    } else if (selectedAnswer !== correctAnswer || !selectedAnswer) {
+        optionFieldLabels[selectedOption].classList.add("wrong-answer");
+
+        // najdeš pravilen odgovor in ga pobarvaš zeleno
+        const correctKey = Object.keys(optionFieldLabels).find(
+            (key) => optionFieldLabels[key].textContent === correctAnswer
+        );
+
+        if (correctKey) {
+            optionFieldLabels[correctKey].classList.add("correct-answer");
+        }
+
         console.log("Wrong answer!");
     }
 
+    setTimeout(() => {
+        // resetiramo optione
+        Object.keys(optionFieldLabels).forEach((key) => {
+            optionField[key].checked = false;
+            optionFieldLabels[key].classList.remove("correct-answer", "wrong-answer");
+        });
 
-    // če še ni konec igre, gremo na naslednje vprašanje
-    if (currentQuestionLevel < numberOfQuestions - 1) {
-        currentQuestionLevel++;
-        displayQuestion(questions[currentQuestionLevel]);
-    } else {
-        endGame();
-    }
+        // če še ni konec igre, gremo na naslednje vprašanje
+        if (currentQuestionLevel < numberOfQuestions - 1) {
+            currentQuestionLevel++;
+            displayQuestion(questions[currentQuestionLevel]);
+        } else {
+            endGame();
+        }
 
 
+        Object.keys(optionField).forEach((key) => {
+            optionField[key].disabled = false;
+        });
+
+        checkButton.disabled = false;       
+    }, 2000);
 }
+
+
 
 // start button
 function setupStartButton() {
@@ -113,9 +147,9 @@ function setupStartButton() {
 
 // check button
 function setupCheckButton() {
-    checkButton.onclick = function() {
+    checkButton.onclick = function () {
         checkAnswer(questions[currentQuestionLevel].correct);
-    }
+    };
 }
 
 
