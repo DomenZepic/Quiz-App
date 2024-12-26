@@ -66,6 +66,8 @@ function displayQuestion(questionData) {
     optionFieldLabels.B.textContent = questionData.options[1];
     optionFieldLabels.C.textContent = questionData.options[2];
     optionFieldLabels.D.textContent = questionData.options[3];
+
+    startTimer();
 }
 
 
@@ -95,7 +97,7 @@ function checkAnswer(correctAnswer) {
     if (selectedAnswer === correctAnswer) {
         correctAnswers++;
         optionFieldLabels[selectedOption].classList.add("correct-answer");
-        console.log("Correct answer!");
+        
     } else if (selectedAnswer !== correctAnswer || !selectedAnswer) {
         optionFieldLabels[selectedOption].classList.add("wrong-answer");
 
@@ -108,7 +110,6 @@ function checkAnswer(correctAnswer) {
             optionFieldLabels[correctKey].classList.add("correct-answer");
         }
 
-        console.log("Wrong answer!");
     }
 
     setTimeout(() => {
@@ -137,6 +138,67 @@ function checkAnswer(correctAnswer) {
 
 
 
+// nastavitev timerja
+let timer; 
+let timeRemaining = 10;         // 10s timer
+
+function startTimer() {
+    timeRemaining = 10;
+    document.getElementById("timer").textContent = timeRemaining;
+
+    clearInterval(timer);
+
+    timer = setInterval(() => {
+        timeRemaining--;
+        document.getElementById("timer").textContent = timeRemaining;
+
+        // If timer reaches 0
+        if (timeRemaining <= 0) {
+            clearInterval(timer); // ustavš timer
+            autoSubmitAnswer(); // Avtomatsko pošlješ odgovor
+        }
+    }, 1000);
+}
+
+
+function autoSubmitAnswer() {
+    // poiščeš izbran odgovor
+    const selectedOption = Object.keys(optionField).find(
+        (key) => optionField[key].checked
+    );
+
+    if (selectedOption) {
+        checkAnswer(questions[currentQuestionLevel].correct);
+    } else {
+        const correctKey = Object.keys(optionFieldLabels).find(
+            (key) => optionFieldLabels[key].textContent === questions[currentQuestionLevel].correct
+        );
+
+        if (correctKey) {
+            optionFieldLabels[correctKey].classList.add("correct-answer");
+        }
+
+        setTimeout(() => {
+            Object.keys(optionFieldLabels).forEach((key) => {
+                optionField[key].checked = false; 
+                optionFieldLabels[key].classList.remove("correct-answer", "wrong-answer");
+            });
+
+            if (currentQuestionLevel < numberOfQuestions - 1) {
+                currentQuestionLevel++;
+                displayQuestion(questions[currentQuestionLevel]);
+                startTimer(); // Restart timerja
+            } else {
+                endGame();
+            }
+        }, 2000);
+    }
+}
+
+
+
+
+
 // start button
 function setupStartButton() {
     document.getElementById("start-game").onclick = function () {
@@ -159,6 +221,7 @@ function setupCheckButton() {
 function endGame() {
     questionsContainer.hidden = true;
     endGameContainer.hidden = false;
+    clearInterval(timer);
 
     document.getElementById("result-text").textContent = 
     `You got ${correctAnswers} answers out of ${numberOfQuestions} correct!`;
