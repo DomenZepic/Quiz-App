@@ -38,16 +38,22 @@ function initializeSlider() {
     };
 }
 
-// start game
+let randomizedQuestions = []; 
+
 function startGame() {
-    resetGame(); // vsakic pred zacetkom resetiras gejm
-    startContainer.hidden = true; // skrijes prvotni screen
-    questionsContainer.hidden = false; // prikazes screen z vprasanji
+    resetGame(); 
+    startContainer.hidden = true; 
+    questionsContainer.hidden = false; 
     endGameContainer.hidden = true;
-    
-    displayQuestion(questions[currentQuestionLevel]);
+
+    // Preden začneš premešaš vprašanja
+    randomizedQuestions = shuffleArray([...questions]).slice(0, numberOfQuestions);
+
+    displayQuestion(randomizedQuestions[currentQuestionLevel]);
     setupCheckButton();
 }
+
+
 
 
 // reset game
@@ -58,120 +64,120 @@ function resetGame() {
 }
 
 
-// prikaz vprašanj
+// Prikaz vprašanj
 function displayQuestion(questionData) {
     currentQuestionNumber.textContent = `Question ${currentQuestionLevel + 1} of ${numberOfQuestions}`;
     currentQuestionText.textContent = questionData.question;
-    optionFieldLabels.A.textContent = questionData.options[0];
-    optionFieldLabels.B.textContent = questionData.options[1];
-    optionFieldLabels.C.textContent = questionData.options[2];
-    optionFieldLabels.D.textContent = questionData.options[3];
+
+    Object.keys(optionField).forEach((key) => {
+        optionField[key].checked = false; 
+        optionField[key].disabled = false;
+        optionFieldLabels[key].classList.remove("correct-answer", "wrong-answer"); 
+    });
+
+    // Posodablanje label texta in value
+    optionFieldLabels.A.textContent = questionData.options[0].trim();
+    optionField.A.value = questionData.options[0].trim();
+
+    optionFieldLabels.B.textContent = questionData.options[1].trim();
+    optionField.B.value = questionData.options[1].trim();
+
+    optionFieldLabels.C.textContent = questionData.options[2].trim();
+    optionField.C.value = questionData.options[2].trim();
+
+    optionFieldLabels.D.textContent = questionData.options[3].trim();
+    optionField.D.value = questionData.options[3].trim();
 
     startTimer();
 }
 
 
-
 function checkAnswer(correctAnswer) {
-    checkButton.disabled = true;                    // onemogočš gumb med preverjanjem, da ne pride do "dvojnega" preverjanja vprašanj - če tega ni, preskoč nasledn vprašanje
-
-    // onemogočš druge optione
-    Object.keys(optionField).forEach((key) => {
-        optionField[key].disabled = true;
-    });
-
-
-    // preverš kater option je prtisnen
+    // Poiščeš izbran odgovor
     const selectedOption = Object.keys(optionField).find(
         (key) => optionField[key].checked
     );
 
+    // Če ni izbran noben option, dobiš alert, da morš izbrat nekej
     if (!selectedOption) {
-        checkButton.disabled = false;
-        return; 
+        alert("Please select an option before checking the answer!");
+        return;
     }
 
-    const selectedAnswer = optionFieldLabels[selectedOption].textContent;
+    // disejblaš gumb - onemogočš večkratno preverjanje
+    checkButton.disabled = true;
 
-    // preverš pravilnost odgovora
-    if (selectedAnswer === correctAnswer) {
+    // disejblaš vse optione
+    Object.keys(optionField).forEach((key) => {
+        optionField[key].disabled = true;
+    });
+
+    const selectedAnswer = optionField[selectedOption].value.trim();
+    const trimmedCorrectAnswer = correctAnswer.trim();
+
+    // označiš ali je odgovor pravilen ali napačen
+    if (selectedAnswer === trimmedCorrectAnswer) {
         correctAnswers++;
         optionFieldLabels[selectedOption].classList.add("correct-answer");
-        
-    } else if (selectedAnswer !== correctAnswer || !selectedAnswer) {
+    } else {
         optionFieldLabels[selectedOption].classList.add("wrong-answer");
 
-        // najdeš pravilen odgovor in ga pobarvaš zeleno
+        // označiš pravilen odgovor
         const correctKey = Object.keys(optionFieldLabels).find(
-            (key) => optionFieldLabels[key].textContent === correctAnswer
+            (key) => optionFieldLabels[key].textContent.trim() === trimmedCorrectAnswer
         );
 
         if (correctKey) {
             optionFieldLabels[correctKey].classList.add("correct-answer");
         }
-
     }
 
     setTimeout(() => {
-        // resetiramo optione
-        Object.keys(optionFieldLabels).forEach((key) => {
-            optionField[key].checked = false;
-            optionFieldLabels[key].classList.remove("correct-answer", "wrong-answer");
-        });
-
-        // če še ni konec igre, gremo na naslednje vprašanje
-        if (currentQuestionLevel < numberOfQuestions - 1) {
-            currentQuestionLevel++;
-            displayQuestion(questions[currentQuestionLevel]);
-        } else {
-            endGame();
-        }
-
-
-        Object.keys(optionField).forEach((key) => {
-            optionField[key].disabled = false;
-        });
-
-        checkButton.disabled = false;       
+        proceedToNextQuestion();
+        checkButton.disabled = false;
     }, 2000);
 }
 
 
 
-// nastavitev timerja
+
+
+
+
+// nastavljanje timerja
 let timer; 
-let timeRemaining = 10;         // 10s timer
+let timeRemaining = 10; // 10 sekund na vprašanje
 
 function startTimer() {
     timeRemaining = 10;
     document.getElementById("timer").textContent = timeRemaining;
 
-    clearInterval(timer);
+    clearInterval(timer); // odstranš prejšne timerje
 
     timer = setInterval(() => {
         timeRemaining--;
         document.getElementById("timer").textContent = timeRemaining;
 
-        // If timer reaches 0
         if (timeRemaining <= 0) {
-            clearInterval(timer); // ustavš timer
-            autoSubmitAnswer(); // Avtomatsko pošlješ odgovor
+            clearInterval(timer); 
+            autoSubmitAnswer(); 
         }
     }, 1000);
 }
 
-
+// avtomatsko pošiljanje odgovorov (po koncu timerja)
 function autoSubmitAnswer() {
-    // poiščeš izbran odgovor
     const selectedOption = Object.keys(optionField).find(
         (key) => optionField[key].checked
     );
 
+    // če je izbran en option
     if (selectedOption) {
-        checkAnswer(questions[currentQuestionLevel].correct);
-    } else {
+        checkAnswer(randomizedQuestions[currentQuestionLevel].correct);
+    } else {        // če ni izbran, samo označiš pravilen odgovor
+        
         const correctKey = Object.keys(optionFieldLabels).find(
-            (key) => optionFieldLabels[key].textContent === questions[currentQuestionLevel].correct
+            (key) => optionFieldLabels[key].textContent === randomizedQuestions[currentQuestionLevel].correct
         );
 
         if (correctKey) {
@@ -179,19 +185,26 @@ function autoSubmitAnswer() {
         }
 
         setTimeout(() => {
-            Object.keys(optionFieldLabels).forEach((key) => {
-                optionField[key].checked = false; 
-                optionFieldLabels[key].classList.remove("correct-answer", "wrong-answer");
-            });
-
-            if (currentQuestionLevel < numberOfQuestions - 1) {
-                currentQuestionLevel++;
-                displayQuestion(questions[currentQuestionLevel]);
-                startTimer(); // Restart timerja
-            } else {
-                endGame();
-            }
+            proceedToNextQuestion();
         }, 2000);
+    }
+}
+
+
+
+// gremo na naslednje vprašanje - resetiranje optionov
+function proceedToNextQuestion() {
+    Object.keys(optionFieldLabels).forEach((key) => {
+        optionField[key].checked = false;
+        optionField[key].disabled = false;
+        optionFieldLabels[key].classList.remove("correct-answer", "wrong-answer");
+    });
+
+    if (currentQuestionLevel < numberOfQuestions - 1) {
+        currentQuestionLevel++;
+        displayQuestion(randomizedQuestions[currentQuestionLevel]);
+    } else {
+        endGame();
     }
 }
 
@@ -207,14 +220,18 @@ function setupStartButton() {
     };
 }
 
+
 // check button
 function setupCheckButton() {
     checkButton.onclick = function () {
-        checkAnswer(questions[currentQuestionLevel].correct);
+
+        if (randomizedQuestions[currentQuestionLevel]) {
+            checkAnswer(randomizedQuestions[currentQuestionLevel].correct);
+        } else {
+            alert("No question is active!");
+        }
     };
 }
-
-
 
 
 // end game
@@ -230,6 +247,19 @@ function endGame() {
         startGame();
     }
 }
+
+
+
+// ustvarjanje random zaporedja vprašanj
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+
 
 // prvi koraki v kvizu
 function initializeApp() {
